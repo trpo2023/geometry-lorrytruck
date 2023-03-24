@@ -1,0 +1,6 @@
+*.[oa]
+*~
+*swp
+bin/
+*.txt
+!input.txt

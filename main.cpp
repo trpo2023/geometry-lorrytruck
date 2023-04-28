@@ -44,7 +44,7 @@ LineStatus checkLine(string line){
     size_t namepos = line.find("circle");
     if (namepos != 0)
         return nameException;
-
+        
     size_t leftb =  line.find("(");
     size_t rightb = line.rfind(")");
 
@@ -59,7 +59,7 @@ LineStatus checkLine(string line){
     if (leftSpace == string::npos) return inBracketsIncorrectException;
     if (rightSpace == string::npos) return inBracketsIncorrectException;
     if (zap == string::npos) return inBracketsIncorrectException;
-
+    
     size_t endSb = 0;
 
     stof(line.substr(leftb+1, leftSpace-leftb), &endSb);
@@ -89,7 +89,7 @@ void printExceptionMessage(LineStatus exception, int lineIndex){
     case inBracketsIncorrectException:
         cout << "expected '({float x} {float y}, {float radius})'";
         break;
-
+    
     default:
         cout << "unknown error ocurred";
         break;
@@ -149,7 +149,7 @@ void printCirclesData(list<Circle> figures){
         cout << "\tintersects:" << endl;
         printIntersects(f, figures);
     }
-
+        
 }
 
 int main()

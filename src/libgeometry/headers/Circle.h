@@ -15,8 +15,10 @@ struct Circle
     std::string initLine;
 };
 
+// todo test
 Vector2 getCirclePosition(std::string line);
 
+// todo test
 float getCircleRadius(std::string line);
 
 void printCircleData(Circle c);

@@ -6,8 +6,8 @@
 #include <math.h>
 
 #include <Circle.h>
-#include <Vector2.h>
 #include <LineStatus.h>
+#include <Vector2.h>
 
 using namespace std;
 

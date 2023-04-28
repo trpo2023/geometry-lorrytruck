@@ -1,0 +1,23 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "lab-4" ]
+  pull_request:
+    branches: [ "lab-4" ]
+
+jobs:
+  build:
+
+    runs-on: Fedora
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: configure
+      run: ./configure
+    - name: run
+      run: make run
+    - name: run tests
+      run: make trun
+    - name: clear
+      run: make clear

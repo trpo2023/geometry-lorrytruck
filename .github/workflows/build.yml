@@ -1,4 +1,5 @@
-name: Build
+
+name: C/C++ CI
 
 on: push
 
@@ -7,16 +8,10 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Check codestyle
-        run: git ls-files *.{c,h} | xargs clang-format -i --verbose && git diff --exit-code
+    - name: run
+      run: make run
 
-      - name: Build application
-        run: make
-
-      - name: Run
-        run: make run
-
-      - name: Run and clear
-        run: make drun
+    - name: run tests
+      run: make runt

@@ -1,92 +1,65 @@
-CC = g++
+APP_NAME = geometry
+LIB_NAME = libgeometry
+TEST_NAME = test
 
-# flags
-CFLAGS = -Wall -Wextra -Werror
-CPPFLAGS = -MMD
+BIN_DIR = bin
+OBJ_DIR = obj
+SRC_DIR = src
+TEST_DIR = test
 
-# executable names
-TARGET = main
-TARGET_TEST = test
+CC = gcc
+CFLAGS = -Wall -Werror
+CPPFLAGS = -I src -MD -MMD
 
-# .cpp files paths
-PATH_MAIN = ./src/geometry/
-PATH_TEST = ./test/
-PATH_LIB = ./src/libgeometry/
+APP_PATH = $(BIN_DIR)/$(APP_NAME)
+LIB_PATH = $(OBJ_DIR)/$(SRC_DIR)/$(LIB_NAME)/$(LIB_NAME).a
+TEST_PATH = $(BIN_DIR)/$(TEST_NAME)
 
-# .o files paths
-PATH_OBJ_MAIN = ./obj/src/geometry/
-PATH_OBJ_TEST = ./obj/test/
-PATH_OBJ_LIB = ./obj/src/libgeometry/
+SRC_EXT = c
 
-# executable files path
-PATH_BIN_TARGET = ./bin/geometry/
-PATH_BIN_TEST = ./bin/geometry-test/
+APP_SOURCES = $(shell find $(SRC_DIR)/$(APP_NAME) -name '*.$(SRC_EXT)')
+APP_OBJECTS = $(APP_SOURCES:$(SRC_DIR)/%.$(SRC_EXT)=$(OBJ_DIR)/$(SRC_DIR)/%.o)
 
-# -----------------------------------------------------------------------
+LIB_SOURCES = $(shell find $(SRC_DIR)/$(LIB_NAME) -name '*.$(SRC_EXT)')
+LIB_OBJECTS = $(LIB_SOURCES:$(SRC_DIR)/%.$(SRC_EXT)=$(OBJ_DIR)/$(SRC_DIR)/%.o)
 
-# libs files
-SRC_LIB = $(wildcard $(PATH_LIB)*.cpp)
-OBJ_LIB = $(patsubst $(PATH_LIB)%.cpp, $(PATH_OBJ_LIB)%.o, $(SRC_LIB))
-STAT_LIB = $(patsubst $(PATH_LIB)%.cpp, $(PATH_OBJ_LIB)%.a, $(SRC_LIB))
-STAT_LIB = $(OBJ_LIB)
+TEST_SOURCE = $(shell find $(TEST_DIR) -name '*.$(SRC_EXT)')
+TEST_OBJECTS = $(TEST_SOURCE:$(TEST_DIR)/%.$(SRC_EXT)=$(OBJ_DIR)/$(TEST_DIR)/%.o)
 
-# main files
-SRC_MAIN = $(wildcard $(PATH_MAIN)*.cpp)
-OBJ_MAIN = $(patsubst $(PATH_MAIN)%.cpp, $(PATH_OBJ_MAIN)%.o, $(SRC_MAIN))
+DEPS = $(APP_OBJECTS:.o=.h) $(LIB_OBJECTS:.o=.h)
 
-# test files
-SRC_TEST = $(wildcard $(PATH_TEST)*.cpp)
-OBJ_TEST = $(patsubst $(PATH_TEST)%.cpp, $(PATH_OBJ_TEST)%.o, $(SRC_TEST)) 
+all: $(APP_PATH)
 
-# -----------------------------------------------------------------------
+-include $(DEPS)
 
-test : $(PATH_BIN_TEST)$(TARGET_TEST)
+$(APP_PATH): $(APP_OBJECTS) $(LIB_PATH)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@ -lm
 
-all : $(PATH_BIN_TARGET)$(TARGET)
-
-# final
-$(PATH_BIN_TARGET)$(TARGET) : $(PATH_BIN_TARGET) $(STAT_LIB) $(OBJ_MAIN)
-	$(CC) $(STAT_LIB) $(OBJ_MAIN) -o $(PATH_BIN_TARGET)$(TARGET)
-
-$(PATH_BIN_TARGET):
-	mkdir -p $(PATH_BIN_TARGET)
-# test
-$(PATH_BIN_TEST)$(TARGET_TEST) : $(PATH_BIN_TEST) $(STAT_LIB) $(OBJ_TEST)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(STAT_LIB) $(OBJ_TEST) -o $(PATH_BIN_TEST)$(TARGET_TEST)
-
-$(PATH_BIN_TEST):
-	mkdir -p $(PATH_BIN_TARGET)
-
-# -----------------------------------------------------------------------
-
-# libs
-$(PATH_OBJ_LIB)%.o : $(PATH_LIB)%.cpp
-	$(CC) -c $< -o $@
-	
-# lib.a
-$(PATH_OBJ_LIB)%.a : $(PATH_OBJ_LIB)%.o
+$(LIB_PATH): $(LIB_OBJECTS)
 	ar rcs $@ $^
 
-# main
-$(PATH_OBJ_MAIN)%.o : $(PATH_MAIN)%.cpp
-	$(CC) -I src/libgeometry/headers -c $< -o $@
+$(OBJ_DIR)/%.o: %.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
-# test
-$(PATH_OBJ_TEST)%.o : $(PATH_TEST)%.cpp
-	$(CC) -I src/libgeometry/headers -c $< -o $@
+.PHONY: clean
 
-# -----------------------------------------------------------------------
+.PHONY: run
 
-clear :
-	rm -f $(OBJ_MAIN) $(OBJ_TEST) \
-	$(PATH_BIN_TARGET)$(TARGET) $(PATH_BIN_TEST)$(TARGET_TEST) \
-	$(OBJ_LIB) $(STAT_LIB)
+.PHONY: test
 
-debug : 
-	$(info $(STAT_LIB))
+clean:
+	$(RM) obj/src/libgeometry/*.o
+	$(RM) obj/src/geometry/*.o
+	$(RM) obj/test/*.o
+	$(RM) obj/test/*.d
+	$(RM) $(BIN_DIR)/*.exe
 
-runt : $(PATH_BIN_TEST)$(TARGET_TEST)
-	./$(PATH_BIN_TEST)$(TARGET_TEST)
+run:
+	./$(TEST_PATH)
+	./bin/geometry
 
-run : $(PATH_BIN_TARGET)$(TARGET)
-	./$(PATH_BIN_TARGET)$(TARGET)
+test: $(TEST_PATH)
+
+$(TEST_PATH): $(TEST_OBJECTS) $(LIB_PATH)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@
+	./$(TEST_PATH)

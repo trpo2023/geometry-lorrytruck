@@ -1,8 +1,4 @@
-*.[oa]
-*~
-*swp
-bin/
-*.txt
-!input.txt
 main
-master
+.vscode
+*.o
+*.a

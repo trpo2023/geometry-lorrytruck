@@ -1,0 +1,4 @@
+circle(0 0, 1)
+circle(1 0, 1.5)
+circle(3 0, 1.5)
+circle(35.5 0, 1.5)
